@@ -9,7 +9,16 @@ const authMiddleware = require('./middleware/auth');
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+const allowed = ['http://localhost:3000', 'https://hardwareinventorystore.netlify.app'];
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowed.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
+//app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
